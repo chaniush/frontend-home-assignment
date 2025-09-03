@@ -9,14 +9,16 @@ import { UsersPage } from './pages/Users';
  */
 function AppRoutes() {
   const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
+  const [uuid, setUuid] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleLoginSuccess = (token: string, role: string) => {
+  const handleLoginSuccess = (token: string, role: string,uuid: string) => {
     if (role !== 'admin') {
       alert('Login failed: Only admin users are allowed.');
       return;
     }
     setAuthToken(token);
+    setUuid(uuid);
     localStorage.setItem('authToken', token);
     navigate('/users'); // Redirect to users page on successful login
   };
@@ -33,8 +35,8 @@ function AppRoutes() {
       <Route
         path="/users"
         element={
-          authToken ? (
-            <UsersPage authToken={authToken} onLogout={handleLogout} />
+          authToken && uuid ? (
+            <UsersPage authToken={authToken} uuid={uuid} onLogout={handleLogout} />
           ) : (
             <Navigate to="/login" /> // Protect this route
           )

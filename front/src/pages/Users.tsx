@@ -10,17 +10,19 @@ interface User {
 
 interface UsersPageProps {
   authToken: string;
+  uuid: string;
   onLogout: () => void;
 }
 
 // Main component for the entire page
-export function UsersPage({ authToken, onLogout }: UsersPageProps) {
+export function UsersPage({ authToken,uuid, onLogout }: UsersPageProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   // New state for toast-style notifications
   const [notification, setNotification] = useState<string | null>(null);
@@ -38,6 +40,9 @@ export function UsersPage({ authToken, onLogout }: UsersPageProps) {
         throw new Error('Failed to fetch users. You may not have permission.');
       }
       const data: User[] = await response.json();
+      // Find and set the current user based on the provided uuid
+      const current = data.find(user => user.uuid === uuid) || null;
+      setCurrentUser(current);
       setUsers(data);
     } catch (err) {
       // Use the main error state for critical fetch failures
@@ -100,6 +105,7 @@ export function UsersPage({ authToken, onLogout }: UsersPageProps) {
       {!isLoading && !error && (
         <UserTable
           users={users}
+          currentUser={currentUser}
           onDeleteClick={(user) => setUserToDelete(user)}
         />
       )}
@@ -181,7 +187,7 @@ function Toolbar({ onOpenCreateModal }: { onOpenCreateModal: () => void }) {
 }
 
 // Table to display users
-function UserTable({ users, onDeleteClick }: { users: User[]; onDeleteClick: (user: User) => void; }) {
+function UserTable({ users,currentUser, onDeleteClick }: { users: User[];currentUser:User, onDeleteClick: (user: User) => void; }) {
   return (
     <table className="users-table">
       <thead>
@@ -198,11 +204,12 @@ function UserTable({ users, onDeleteClick }: { users: User[]; onDeleteClick: (us
             <td>{user.uuid}</td>
             <td>{user.username}</td>
             <td>{user.role}</td>
-            <td className="actions-column">
+           {user.uuid !== currentUser.uuid &&
+           <td className="actions-column">
               <button onClick={() => onDeleteClick(user)} className="delete-button">
                 Delete
               </button>
-            </td>
+            </td>}
           </tr>
         ))}
       </tbody>

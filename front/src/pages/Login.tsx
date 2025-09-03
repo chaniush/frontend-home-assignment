@@ -4,7 +4,7 @@ import './Users.css';
 
 // Props for the component, including a callback for when login is successful
 interface LoginPageProps {
-  onLoginSuccess: (token: string, role: string) => void;
+  onLoginSuccess: (token: string, role: string , uuid: string) => void;
 }
 
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
@@ -38,7 +38,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
       // On success, call the parent component's onLoginSuccess function
       if (data.token) {
-        onLoginSuccess(data.token, data.role);
+        onLoginSuccess(data.token, data.role, data.uuid);
       }
 
     } catch (err) {
