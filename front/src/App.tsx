@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import { LoginPage } from './pages/Login';
 import { UsersPage } from './pages/Users';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { MyAccountPage } from './pages/MyAccountPage';
 
 /**
  * A wrapper component to manage routing logic.
@@ -11,11 +12,11 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 function AppRoutes() {
   const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
   const [uuid, setUuid] = useState<string | null>(null);
+  const [role, setRole] = useState<'admin' | 'user' | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const navigate = useNavigate();
   const theme = createTheme({
     components: {
-      
-      
       MuiDialogTitle: {
         styleOverrides: {
           root: {
@@ -55,21 +56,21 @@ function AppRoutes() {
       },
     },
   });
-  const handleLoginSuccess = (token: string, role: string,uuid: string) => {
-    if (role !== 'admin') {
-      alert('Login failed: Only admin users are allowed.');
-      return;
-    }
+  const handleLoginSuccess = (token: string, role: string,uuid: string, username: string) => {
     setAuthToken(token);
     setUuid(uuid);
+    setUsername(username);
+    setRole(role as 'admin' | 'user');
     localStorage.setItem('authToken', token);
-    navigate('/users'); // Redirect to users page on successful login
+    navigate('/my-account');
   };
 
   const handleLogout = () => {
     setAuthToken(null);
+    setUuid(null);
+    setRole(null);
     localStorage.removeItem('authToken');
-    navigate('/login'); // Redirect to login page on logout
+    navigate('/login');
   };
 
   return (
@@ -79,13 +80,24 @@ function AppRoutes() {
       <Route
         path="/users"
         element={
-          authToken && uuid ? (
+          authToken && uuid && role === 'admin' ? (
             <UsersPage authToken={authToken} uuid={uuid} onLogout={handleLogout} />
           ) : (
             <Navigate to="/login" /> // Protect this route
           )
         }
       />
+     
+     <Route
+          path="/my-account"
+          element={
+            authToken && uuid && role  ? (
+              <MyAccountPage username={username} role={role} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
       {/* Default route redirects based on auth status */}
       <Route path="*" element={<Navigate to={authToken ? "/users" : "/login"} />} />
     </Routes>

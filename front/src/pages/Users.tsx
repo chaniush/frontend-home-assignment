@@ -1,11 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import Container from '@mui/material/Container';
-import AppBar from '@mui/material/AppBar';
-import MuiToolbar from '@mui/material/Toolbar';
+import { Header } from './Header';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { Alert, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, MenuItem, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
+import { Sidebar } from './Sidebar';
 
 // The User type definition
 interface User {
@@ -98,8 +98,8 @@ export function UsersPage({ authToken, uuid, onLogout }: UsersPageProps) {
     }}>
       {/* Render the notification if one exists */}
       {notification && <Notification message={notification} onClose={() => setNotification(null)} />}
-      <Header setConfirmLogout={setConfirmLogout} />
-     
+      <Header setConfirmLogout={setConfirmLogout} title='Admin Management'/>
+      <Sidebar role={currentUser.role}/>
 
       <Toolbar onOpenCreateModal={() => setIsModalOpen(true)} />
 
@@ -155,9 +155,7 @@ export function UsersPage({ authToken, uuid, onLogout }: UsersPageProps) {
     </Container>
   );
 }
-interface HeaderProps {
-  setConfirmLogout: (value: boolean) => void;
-}
+
 interface LogoutDialogProps {
   confirmLogout: boolean;
   setConfirmLogout: (value: boolean) => void;
@@ -205,71 +203,6 @@ function LogoutDialog({ confirmLogout, setConfirmLogout, onLogout }: LogoutDialo
       </Button>
     </DialogActions>
   </Dialog>;
-}
-
-function Header({ setConfirmLogout }: HeaderProps) {
-  return (
-    <AppBar
-      position="fixed"
-      elevation={2}
-      sx={{
-        background: 'linear-gradient(to right, #ffffff, #f8f9fa)',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-        zIndex: 500,
-      }}
-    >
-      <MuiToolbar
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0,1fr) auto',
-          alignItems: 'center',
-          gap: '1rem',
-          p: { xs: '1rem 1rem', sm: '1rem 2rem' },
-          minWidth: 0,
-        }}
-      >
-        <Typography
-          variant="h6"
-          noWrap
-          sx={{
-            fontWeight: 600,
-            color: '#2d3748',
-            margin: 0,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            fontSize: { xs: '1.125rem', md: '1.5rem' },
-          }}
-        >
-          User Management
-        </Typography>
-        <Button
-          variant="contained"
-          disableElevation
-          onClick={() => setConfirmLogout(true)}
-          sx={{
-            background: 'linear-gradient(135deg, #6c757d, #495057)',
-            color: 'white',
-            minWidth: '110px',
-            textAlign: 'center',
-            p: '0.5rem 1rem',
-            borderRadius: '6px',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'transform 0.15s ease, box-shadow 0.2s ease',
-            boxShadow: 'none',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #5a6268, #343a40)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
-            },
-          }}
-        >
-          Log Out
-        </Button>
-      </MuiToolbar>
-    </AppBar>
-  );
 }
 
 // --- Helper Components ---

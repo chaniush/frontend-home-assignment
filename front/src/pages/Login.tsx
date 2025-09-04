@@ -3,7 +3,7 @@ import { Alert, Box, Button, Paper, TextField, Typography } from '@mui/material'
 
 // Props for the component, including a callback for when login is successful
 interface LoginPageProps {
-  onLoginSuccess: (token: string, role: string, uuid: string) => void;
+  onLoginSuccess: (token: string, role: string, uuid: string,  username: string) => void;
 }
 
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
@@ -37,7 +37,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
       // On success, call the parent component's onLoginSuccess function
       if (data.token) {
-        onLoginSuccess(data.token, data.role, data.uuid);
+        onLoginSuccess(data.token, data.role, data.uuid, data.username);
       }
 
     } catch (err) {
